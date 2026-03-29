@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'dj_rest_auth',
     'drf_yasg',
+    'django_filters',
     'inventario',
 ]
 
@@ -71,8 +72,14 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES":
     ("rest_framework_simplejwt.authentication.JWTAuthentication",),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
-    # "DEFAULT_PERMISSION_CLASSES":
-    # ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter"
+    ],
+    "EXCEPTION_HANDLER": "inventario.exception_handlers.custom_exception_handler",
 }
 
 REST_USE_JWT = True

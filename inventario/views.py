@@ -5,8 +5,9 @@ from .forms import ProductoForm
 from .models import Categoria, Producto, Proveedor, MovimientoInventario
 from django.shortcuts import get_object_or_404
 
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import api_view, permission_classes
+from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import (
     CategoriaSerializer,
     ProductoSerializer,
@@ -15,6 +16,7 @@ from .serializers import (
     ReporteProductoSerializer,
     ContactSerializer,
 )
+from .filters import ProductoFilter, ProveedorFilter, MovimientoInventarioFilter
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -78,21 +80,56 @@ class CategoriaViewSet(viewsets.ModelViewSet):
 class CategoriaCreateView(generics.ListCreateAPIView):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['nombre']
+    ordering_fields = ['nombre', 'id']
+    ordering = ['nombre']
 
 
 class ProductoListCreateView(generics.ListCreateAPIView):
-    queryset = Producto.objects.all()
+    queryset = Producto.objects.all().select_related('categoria')
     serializer_class = ProductoSerializer
+    filterset_class = ProductoFilter
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['nombre', 'descripcion']
+    ordering_fields = ['nombre', 'precio', 'created_at']
+    ordering = ['-created_at']
+
+    def get_permissions(self):
+        """
+        POST requiere autenticación, GET es público
+        """
+        if self.request.method == 'POST':
+            return [IsAuthenticated()]
+        return []
 
 
 class ProveedorListCreateView(generics.ListCreateAPIView):
     queryset = Proveedor.objects.all()
     serializer_class = ProveedorSerializer
+    filterset_class = ProveedorFilter
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['nombre', 'email', 'ciudad']
+    ordering_fields = ['nombre', 'email']
+    ordering = ['nombre']
+
+    def get_permissions(self):
+        """
+        POST requiere autenticación, GET es público
+        """
+        if self.request.method == 'POST':
+            return [IsAuthenticated()]
+        return []
 
 
 class MovimientoInventarioListCreateView(generics.ListCreateAPIView):
     queryset = MovimientoInventario.objects.all().select_related('producto', 'proveedor')
     serializer_class = MovimientoInventarioSerializer
+    filterset_class = MovimientoInventarioFilter
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    ordering_fields = ['fecha', 'cantidad', 'tipo']
+    ordering = ['-fecha']
+    permission_classes = [IsAuthenticated]  # Require auth para todos los métodos
 
 @api_view(['GET'])
 def categoria_count(request):
