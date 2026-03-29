@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import RedirectView
 
 from django.urls import re_path
 from rest_framework import permissions
@@ -40,6 +41,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('', RedirectView.as_view(pattern_name='schema-swagger-ui', permanent=False)),
     path('admin/', admin.site.urls),
     path('inventario/', include('inventario.urls')),
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),

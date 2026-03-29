@@ -2,12 +2,19 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from .forms import ProductoForm
 
-from .models import Categoria, Producto
+from .models import Categoria, Producto, Proveedor, MovimientoInventario
 from django.shortcuts import get_object_or_404
 
 from rest_framework import viewsets, generics
 from rest_framework.decorators import api_view, permission_classes
-from .serializers import CategoriaSerializer, ProductoSerializer, ReporteProductoSerializer, ContactSerializer
+from .serializers import (
+    CategoriaSerializer,
+    ProductoSerializer,
+    ProveedorSerializer,
+    MovimientoInventarioSerializer,
+    ReporteProductoSerializer,
+    ContactSerializer,
+)
 
 from rest_framework.permissions import IsAuthenticated
 
@@ -67,9 +74,25 @@ class CategoriaViewSet(viewsets.ModelViewSet):
     serializer_class = CategoriaSerializer
     permission_classes = [IsAuthenticated]
 
-class CategoriaCreateView(generics.CreateAPIView, generics.ListAPIView):
+
+class CategoriaCreateView(generics.ListCreateAPIView):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
+
+
+class ProductoListCreateView(generics.ListCreateAPIView):
+    queryset = Producto.objects.all()
+    serializer_class = ProductoSerializer
+
+
+class ProveedorListCreateView(generics.ListCreateAPIView):
+    queryset = Proveedor.objects.all()
+    serializer_class = ProveedorSerializer
+
+
+class MovimientoInventarioListCreateView(generics.ListCreateAPIView):
+    queryset = MovimientoInventario.objects.all().select_related('producto', 'proveedor')
+    serializer_class = MovimientoInventarioSerializer
 
 @api_view(['GET'])
 def categoria_count(request):

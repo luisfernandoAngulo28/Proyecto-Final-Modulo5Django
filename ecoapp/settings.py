@@ -18,16 +18,37 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def _load_env_file(env_path: Path) -> None:
+    if not env_path.exists():
+        return
+
+    for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        os.environ.setdefault(key, value)
+
+
+_load_env_file(BASE_DIR / ".env")
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-sb+2#vxq5ajbl1#j4d8w&zcpme^w#yp_yoxtn(ojw_yctadpud'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-sb+2#vxq5ajbl1#j4d8w&zcpme^w#yp_yoxtn(ojw_yctadpud')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() in ('1', 'true', 'yes', 'on')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+    if host.strip()
+]
 
 
 # Application definition
@@ -94,12 +115,26 @@ WSGI_APPLICATION = 'ecoapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DB_ENGINE = os.getenv('DB_ENGINE', 'django.db.backends.sqlite3')
+
+if DB_ENGINE == 'django.db.backends.sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': DB_ENGINE,
+            'NAME': os.getenv('DB_NAME', BASE_DIR / 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': DB_ENGINE,
+            'NAME': os.getenv('DB_NAME', ''),
+            'USER': os.getenv('DB_USER', ''),
+            'PASSWORD': os.getenv('DB_PASSWORD', ''),
+            'HOST': os.getenv('DB_HOST', 'localhost'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
+    }
 # DATABASES = {
 #     "default": {
 #         "ENGINE": "django.db.backends.postgresql",
@@ -135,9 +170,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
 # LANGUAGE_CODE = 'en-us'
-LANGUAGE_CODE = 'es-es'
+LANGUAGE_CODE = os.getenv('LANGUAGE_CODE', 'es-es')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.getenv('TIME_ZONE', 'UTC')
 
 USE_I18N = True
 
@@ -148,6 +183,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Keep implicit integer PKs consistent with the current schema.
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+EMAIL_HOST = os.getenv('EMAIL_HOST', '')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '25'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() in ('1', 'true', 'yes', 'on')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
 
 LOGGING = {

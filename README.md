@@ -27,3 +27,4 @@ python manage.py createsuperuser
 ```sh
 python manage.py loaddata dump_inventario.json
 ```
+# Proyecto-Final-Modulo5Django
