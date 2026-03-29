@@ -39,20 +39,20 @@ pip install -r requirements.txt
 
 ### 4. Configurar variables de entorno
 
-Copia el archivo `.env` con tus credenciales (ya incluido en el proyecto):
+Copia el archivo .env.example a .env y completa tus credenciales locales:
 
 ```env
 DEBUG=True
 ALLOWED_HOSTS=127.0.0.1,localhost
 SECRET_KEY=change-secret-key
 DB_ENGINE=django.db.backends.postgresql
-DB_NAME=BDEco_App
-DB_USER=postgres
-DB_PASSWORD=12345678
+DB_NAME=your_database_name
+DB_USER=your_database_user
+DB_PASSWORD=your_database_password
 DB_HOST=localhost
 DB_PORT=5432
 TIME_ZONE=America/La_Paz
-LANGUAGE_CODE=en-EN
+LANGUAGE_CODE=es-ES
 ```
 
 ### 5. Ejecutar migraciones
@@ -218,13 +218,33 @@ Modelos registrados:
 │   ├── admin.py         # Configuración admin
 │   ├── forms.py         # Formularios Django
 │   └── migrations/      # Migraciones de BD
-├── .env                 # Variables de entorno
+├── .env                 # Variables de entorno locales (no versionado)
+├── .env.example         # Plantilla para configurar entorno
 ├── requirements.txt     # Dependencias
 ├── manage.py
 ├── TAREA_MODULO_V.md    # Enunciado de la tarea
 ├── INTEGRANTES.md       # Información de integrantes
 └── README.md            # Este archivo
 ```
+
+## Checklist de Entrega
+
+- Proyecto Django con al menos una app
+- Minimo 4 modelos implementados
+- Minimo 2 validaciones personalizadas
+- Modelos registrados en administrador Django
+- Minimo 3 endpoints tipo GenericAPIView o ModelViewSet
+- Minimo 1 Custom API
+- Archivo requirements.txt en la raiz
+- Archivo INTEGRANTES.md en la raiz
+
+## Evidencia de Pruebas (Postman)
+
+- Autenticacion JWT exitosa (POST /api/token/)
+- CRUD base de categorias y proveedores validado
+- Creacion de producto validada con reglas de negocio
+- Movimientos de inventario probados con token
+- Reporte de productos y documentacion Swagger funcionales
 
 ## Contribuciones
 
@@ -234,4 +254,3 @@ Docente: Juan Marcelo Arteaga Gutierrez
 ## Licencia
 
 MIT License
-# Proyecto-Final-Modulo5Django
