@@ -1,0 +1,493 @@
+{
+  "info": {
+    "_postman_id": "ecoapp-collection",
+    "name": "EcoApp - Django REST API",
+    "description": "Complete API testing collection for EcoApp project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Get JWT Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.environment.set('token', pm.response.json().access);",
+                  "    console.log('Token obtained: ' + pm.response.json().access);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/token/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "token",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Categorías",
+      "item": [
+        {
+          "name": "Listar Categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inventario/api/categorias/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "categorias",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Contar Categorías (Custom API)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inventario/categorias/cantidad",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "categorias",
+                "cantidad"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Categoría",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Hogar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inventario/api/categorias/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "categorias",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Productos",
+      "item": [
+        {
+          "name": "Listar Productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inventario/api/productos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "productos",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar con Filtro de Precio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inventario/api/productos/?precio_min=100&precio_max=500",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "productos",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "precio_min",
+                  "value": "100"
+                },
+                {
+                  "key": "precio_max",
+                  "value": "500"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Productos en Unidades",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inventario/productos/filtrar/unidades",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "productos",
+                "filtrar",
+                "unidades"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Producto (Precio PAR)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Monitor Samsung 27\",\n    \"categoria\": 1,\n    \"descripcion\": \"Monitor Full HD 144Hz\",\n    \"precio\": 400,\n    \"unidades\": \"u\",\n    \"disponible\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inventario/api/productos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "productos",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Producto (Precio IMPAR - Error)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"Teclado Mecánico\",\n    \"categoria\": 1,\n    \"descripcion\": \"Teclado RGB\",\n    \"precio\": 299,\n    \"unidades\": \"u\",\n    \"disponible\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inventario/api/productos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "productos",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Proveedores",
+      "item": [
+        {
+          "name": "Listar Proveedores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/inventario/api/proveedores/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "proveedores",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Proveedor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nombre\": \"TechWorld Bolivia\",\n    \"email\": \"ventas@techworld.bo\",\n    \"telefono\": \"555-2024\",\n    \"ciudad\": \"La Paz\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inventario/api/proveedores/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "proveedores",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Movimientos de Inventario",
+      "item": [
+        {
+          "name": "Listar Movimientos (Requiere Token)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/inventario/api/movimientos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "movimientos",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Entrada de Inventario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"producto\": 1,\n    \"proveedor\": 1,\n    \"tipo\": \"entrada\",\n    \"cantidad\": 100,\n    \"observacion\": \"Compra grande al distribuidor autorizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inventario/api/movimientos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "movimientos",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Crear Salida de Inventario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"producto\": 1,\n    \"proveedor\": null,\n    \"tipo\": \"salida\",\n    \"cantidad\": 5,\n    \"observacion\": \"Venta a cliente directo\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/inventario/api/movimientos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "api",
+                "movimientos",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Reportes",
+      "item": [
+        {
+          "name": "Reporte de Productos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/inventario/reporte/productos",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "inventario",
+                "reporte",
+                "productos"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Documentación",
+      "item": [
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/swagger/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "swagger",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "ReDoc",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/redoc/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "redoc",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
